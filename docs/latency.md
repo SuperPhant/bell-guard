@@ -1,6 +1,6 @@
 # Full-loop latency
 
-Generated 2026-11-21 08:23 UTC by `ops/src/report.ts` from BellGuard's own events.
+Generated 2026-11-21 08:26 UTC by `ops/src/report.ts` from BellGuard's own events.
 
 A loop starts in the Base Sepolia block where a Bell market records a falling print (the `Observed` log Reactive
 picks up) and ends in the Base Sepolia block where BellGuard runs. Both ends are read from Base's BaseTime
