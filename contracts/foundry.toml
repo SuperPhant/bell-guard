@@ -1,0 +1,33 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+test = "test"
+script = "script"
+solc = "0.8.30"
+# Lasna runs a Cancun-level EVM; Base Sepolia accepts the same bytecode.
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+via_ir = true
+# Base's B20 token precompiles and the BaseTime predeploy, for tests and scripts forked from Base Sepolia.
+hardfork = "base:Denim"
+remappings = [
+    "forge-std/=lib/forge-std/src/",
+    "reactive-lib-omni/=lib/reactive-lib-omni/src/",
+    "base-std/=lib/base-std/src/",
+    "bell/=lib/bell/contracts/src/",
+]
+fs_permissions = [{ access = "read-write", path = "./deployments" }]
+
+[profile.default.fuzz]
+runs = 256
+
+[rpc_endpoints]
+base_sepolia = "https://sepolia.base.org"
+lasna = "https://lasna-rpc.rnk.dev/"
+
+[fmt]
+line_length = 120
+tab_width = 4
+quote_style = "double"
