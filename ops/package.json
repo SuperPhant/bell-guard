@@ -1,0 +1,26 @@
+{
+  "name": "bell-guard-ops",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Bell Guard operations: sandbox crash races, the live-market demo position, and full-loop latency reports.",
+  "license": "MIT",
+  "scripts": {
+    "race": "tsx src/race.ts",
+    "report": "tsx src/report.ts",
+    "live": "tsx src/live.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ox": "^1.8.16",
+    "tsx": "^4.23.15",
+    "viem": "^2.57.19"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  }
+}

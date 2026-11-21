@@ -1,0 +1,113 @@
+[
+  {
+    "at": "2026-11-21T08:10:58.970Z",
+    "note": "first race",
+    "pairId": 0,
+    "prices": {
+      "start": 346.905,
+      "slide": 291.4002,
+      "warning": 247.69017
+    },
+    "guardedHealthBeforeWarning": 1.1549999945896572,
+    "requestedDelayMs": 3000,
+    "warning": {
+      "tx": "0x2fe7dd91268d2236e6681bdf6700d8de49690286175a1f4e4899fccd7ed22584",
+      "block": 61633920,
+      "atMs": 1795248652800
+    },
+    "confirming": {
+      "tx": "0x374eb2c956a99e821a086526c327a0d9b303d43b2ec93a08974af01affb2d8ab",
+      "block": 61633944,
+      "atMs": 1795248657600
+    },
+    "confirmAfterWarningMs": 4800,
+    "guard": {
+      "tx": "0xafdd62367827bfb5fe9934deff16e0784f9af56bfd7e8ac774d2ea9707fbde89",
+      "block": 61633928,
+      "atMs": 1795248654400,
+      "loopMs": 1600,
+      "loopBlocks": 8,
+      "repaid": 4145.514843,
+      "beforeConfirmingPrint": true
+    },
+    "slideLoopMs": 1000,
+    "guardedLiquidated": false,
+    "unguardedLiquidated": true,
+    "unguardedSeized": 30.11204507,
+    "unguardedPenaltyUsd": 520.3575024359625
+  },
+  {
+    "at": "2026-11-21T08:12:09.524Z",
+    "note": "delay sweep",
+    "pairId": 1,
+    "prices": {
+      "start": 346.905,
+      "slide": 291.4002,
+      "warning": 247.69017
+    },
+    "guardedHealthBeforeWarning": 1.1549999935075885,
+    "requestedDelayMs": 0,
+    "warning": {
+      "tx": "0x406fb28ef02e16b6074b2c83e0b46e9baa152f444ea45e8019a58b5416f53839",
+      "block": 61634284,
+      "atMs": 1795248725600
+    },
+    "confirming": {
+      "tx": "0x07a3fe65c7cecfbb0bf52a3f5fe5a8b04d19a325f3c6fb897f67650544b33cbe",
+      "block": 61634286,
+      "atMs": 1795248726000
+    },
+    "confirmAfterWarningMs": 400,
+    "guard": {
+      "tx": "0x31cad3c98739f0b1b79e4ee260e95dc5dba8e002afeb3c99ee2bcffd763e79f7",
+      "block": 61634293,
+      "atMs": 1795248727400,
+      "loopMs": 1800,
+      "loopBlocks": 9,
+      "repaid": 0,
+      "beforeConfirmingPrint": false
+    },
+    "slideLoopMs": 1600,
+    "guardedLiquidated": true,
+    "unguardedLiquidated": true,
+    "unguardedSeized": 30.11204504,
+    "unguardedPenaltyUsd": 520.3575020052567
+  },
+  {
+    "at": "2026-11-21T08:12:37.839Z",
+    "note": "delay sweep",
+    "pairId": 2,
+    "prices": {
+      "start": 346.905,
+      "slide": 291.4002,
+      "warning": 247.69017
+    },
+    "guardedHealthBeforeWarning": 1.1549999941734768,
+    "requestedDelayMs": 1500,
+    "warning": {
+      "tx": "0xe2f223389de3ae5081f82fb2080d5cf164ba136cc0353ed747e05cb5585e0ed8",
+      "block": 61634429,
+      "atMs": 1795248754600
+    },
+    "confirming": {
+      "tx": "0xf2bbf74d5e42b6faf73deff1eb358113f62088de83cfb87599a6abe48b60a6f0",
+      "block": 61634437,
+      "atMs": 1795248756200
+    },
+    "confirmAfterWarningMs": 1600,
+    "guard": {
+      "tx": "0x0fd66a176988dc684da3494558a101235d7fcd3ca1c12a9c279a5b71bb826eed",
+      "block": 61634434,
+      "atMs": 1795248755600,
+      "loopMs": 1000,
+      "loopBlocks": 5,
+      "repaid": 4145.514849,
+      "beforeConfirmingPrint": true
+    },
+    "slideLoopMs": 1400,
+    "guardedLiquidated": false,
+    "unguardedLiquidated": true,
+    "unguardedSeized": 30.11204505,
+    "unguardedPenaltyUsd": 520.3575034821588
+  }
+]

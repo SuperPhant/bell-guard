@@ -1,0 +1,32 @@
+{
+  "rpc": "https://lasna-rpc.rnk.dev/",
+  "originChainId": 84532,
+  "reactive": "0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44",
+  "operator": "0x1d448CA86862d92FAa544c88C88c485631A12703",
+  "fundedWith": "4 lREACT at deployment",
+  "chainId": 5318007,
+  "watching": [
+    {
+      "token": "any",
+      "market": "0x9D016aCe2A6F4a55dee414026F36bc283a67bD24",
+      "note": "sandbox"
+    },
+    {
+      "token": "0xb200000000000000000000166b22Bb06299e16d5",
+      "market": "0x6d9f3290AAEBF3A207D181250548865BA138039C",
+      "note": "live TSLA"
+    },
+    {
+      "token": "0xB20000000000000000000011e9eDc311b3557A24",
+      "market": "0x6d9f3290AAEBF3A207D181250548865BA138039C",
+      "note": "live MSTR"
+    },
+    {
+      "token": "0xb200000000000000000000A9e9969Eb6B958f57F",
+      "market": "0x6d9f3290AAEBF3A207D181250548865BA138039C",
+      "note": "live NVDA"
+    }
+  ],
+  "systemContract": "0x8888888888888888888888888888888888888888",
+  "deployTx": "0x6713eacc1352f4324f8bede50dca65b0ca5be9a5f36eb8f77012a5748e1512d3"
+}
