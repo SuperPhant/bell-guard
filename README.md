@@ -79,6 +79,16 @@ A borrower opts in with `approve(guard, budget)` on the market's tUSD and
 - **Self-describing loops.** Each callback carries the origin block, the Lasna block and the Lasna timestamp, and the
   guard logs its own millisecond time, so every loop can be measured from the chain alone.
 
+### Why Reactive, and not a keeper bot
+
+Without Reactive, the guard would need an off-chain keeper: a server that watches every Bell print around the clock,
+keeps a funded hot key, and has to be up at the moment a stock gaps. It is one more thing to run, secure and trust, and
+when it is down nobody notices until a borrower is liquidated. With Reactive the watching is a contract: the
+subscription is the trigger, the state (the last print of every stock) lives on-chain, and the network delivers the
+callback. Measured cost: about 0.014 REACT per print on Lasna (0.27 for the first 20 prints, rises included) and a
+fraction of a cent of gas per callback on Base Sepolia. Measured speed: 1.0–1.8 s from the falling print to the
+repayment. Nothing to run.
+
 ## Measured latency
 
 A loop starts in the Base Sepolia block where the falling print was recorded and ends in the Base Sepolia block where
