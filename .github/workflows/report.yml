@@ -1,0 +1,59 @@
+name: report
+
+# Refreshes the latency report and the dashboard data (docs/data) from the chain: BellGuard's events on Base
+# Sepolia, matched with BellGuardReactive's transactions on Reactive Lasna (only reachable from some networks, so it
+# runs here). Commits only when something changed.
+
+on:
+  schedule:
+    - cron: "25 * * * 1-5" # hourly on weekdays; live Bell prints are relayed every two hours while US stocks trade
+    - cron: "25 6 * * 0,6" # once a day at weekends (sandbox races)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: report
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    env:
+      LASNA_RPC: https://lasna-rpc.rnk.dev/
+      REACTIVE: "0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.10.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ops/package-lock.json
+
+      - name: Reactive transactions from Lasna
+        run: |
+          cast logs --address "$REACTIVE" --from-block 8877000 --to-block latest --rpc-url "$LASNA_RPC" --json \
+            | jq -c '[.[] | {blockNumber, transactionHash, topics, data}]' > ops/results/lasna-logs.json
+          echo "$(jq length ops/results/lasna-logs.json) logs"
+
+      - name: Report
+        working-directory: ops
+        run: |
+          npm ci
+          npx tsx src/report.ts
+
+      - name: Commit
+        run: |
+          git add docs/data docs/latency.md ops/results
+          # The report stamps its generation time; only commit when a loop or race actually changed.
+          changed=$(git diff --cached -U0 | grep -E '^[+-][^+-]' | grep -vE 'generatedAt|^[+-]Generated ' || true)
+          if [ -z "$changed" ]; then echo "nothing new"; exit 0; fi
+          git -c user.name="bell-guard report" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "report: $(jq -r '.summary.all.loops' docs/data/loops.json) loops"
+          git push

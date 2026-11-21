@@ -123,8 +123,12 @@ async function main() {
     rescues: loops.reduce((s, x) => s + x.rescued, 0),
   };
 
-  mkdirSync(resolve(root, "docs"), { recursive: true });
-  writeFileSync(resolve(root, "ops/results/loops.json"), JSON.stringify({ summary, loops }, null, 2) + "\n");
+  mkdirSync(resolve(root, "docs/data"), { recursive: true });
+  const loopsJson = JSON.stringify({ summary, loops }, null, 2) + "\n";
+  writeFileSync(resolve(root, "ops/results/loops.json"), loopsJson);
+  writeFileSync(resolve(root, "docs/data/loops.json"), loopsJson);
+  const racesFile = resolve(root, "ops/results/races.json");
+  writeFileSync(resolve(root, "docs/data/races.json"), existsSync(racesFile) ? readFileSync(racesFile, "utf8") : "[]\n");
 
   const base = "https://sepolia.basescan.org/tx/";
   const rs = "https://lasna.reactscan.net/tx/";

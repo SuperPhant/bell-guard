@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bell Guard · reactive deleveraging for tokenized-stock loans</title>
+<meta name="description" content="Bell gives borrowers one price print of warning before a liquidation. Bell Guard, a Reactive Network contract, acts on it in about a second.">
+<style>
+  :root {
+    --ink: #14161a; --muted: #5d6470; --line: #e4e7ec; --bg: #f7f8fa; --card: #fff;
+    --accent: #e8590c; --accent-soft: #fff1e8; --ok: #12805c; --ok-soft: #e7f6ef; --bad: #c92a2a; --bad-soft: #fdecec;
+    --blue: #1c5dd8; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 Inter, "Segoe UI", system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  header { background: #101317; color: #fff; padding: 40px 24px 34px; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  header h1 { margin: 0 0 6px; font-size: 34px; letter-spacing: -0.02em; }
+  header h1 span { color: #ff8a3d; }
+  header p { margin: 0; color: #c9ced6; font-size: 18px; max-width: 760px; }
+  header .links { margin-top: 16px; display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; }
+  header .links a { color: #9cc2ff; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 26px; }
+  .tile { background: #1a1f26; border: 1px solid #2a313b; border-radius: 12px; padding: 14px 16px; }
+  .tile b { display: block; font-size: 28px; color: #fff; letter-spacing: -0.02em; }
+  .tile small { color: #9aa3af; font-size: 13px; }
+  main { padding: 26px 24px 60px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  h2 { margin: 0 0 4px; font-size: 21px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 16px; font-size: 15px; }
+  .loop { display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr; align-items: stretch; gap: 0; margin: 8px 0 4px; }
+  .step { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #fbfcfd; }
+  .step .chain { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .step h3 { margin: 4px 0 6px; font-size: 16px; }
+  .step p { margin: 0; font-size: 14px; color: #39404a; }
+  .arrow { display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 26px; font-weight: 700; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--line); padding: 6px 8px; white-space: nowrap; }
+  td { border-bottom: 1px solid #f0f2f5; padding: 7px 8px; vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pill { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .pill.warn { background: var(--accent-soft); color: var(--accent); }
+  .feed { list-style: none; margin: 0; padding: 0; max-height: 470px; overflow: auto; font-size: 14.5px; }
+  .feed li { display: grid; grid-template-columns: 112px 26px 1fr; gap: 6px; padding: 8px 4px; border-bottom: 1px solid #f0f2f5; animation: fade 0.6s ease; }
+  .feed li .t { font-family: var(--mono); font-size: 13px; color: var(--muted); padding-top: 1px; }
+  .feed li .i { text-align: center; }
+  .feed li .d small { color: var(--muted); }
+  .feed li.big { background: var(--ok-soft); }
+  .feed li.alarm { background: var(--accent-soft); }
+  .feed li.dead { background: var(--bad-soft); }
+  @keyframes fade { from { background: #fff7c2; } }
+  .status { font-size: 13px; color: var(--muted); margin-left: 8px; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #2fb344; margin-right: 6px; box-shadow: 0 0 0 3px #2fb34422; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; font-size: 15px; }
+  .kv span:nth-child(odd) { color: var(--muted); }
+  .kv b { font-variant-numeric: tabular-nums; }
+  .bars { display: flex; align-items: flex-end; gap: 4px; height: 120px; padding: 8px 0 0; border-bottom: 1px solid var(--line); }
+  .bars div { flex: 1; background: var(--accent); border-radius: 4px 4px 0 0; min-width: 6px; position: relative; }
+  .bars div.live { background: var(--blue); }
+  .legend { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 12px; vertical-align: -1px; }
+  form.protect { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
+  form.protect label { font-size: 13px; color: var(--muted); display: block; }
+  form.protect input { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+  button { font: inherit; font-weight: 600; padding: 9px 16px; border-radius: 9px; border: 1px solid #c7ccd4; background: #fff; cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .note { font-size: 13.5px; color: var(--muted); }
+  code { font-family: var(--mono); font-size: 13px; background: #f1f3f6; padding: 1px 5px; border-radius: 5px; }
+  .mono { font-family: var(--mono); font-size: 13px; }
+  footer { color: var(--muted); font-size: 13px; text-align: center; padding: 10px 24px 40px; }
+  @media (max-width: 860px) { .tiles, .grid2, form.protect { grid-template-columns: 1fr 1fr; } .loop { grid-template-columns: 1fr; } .arrow { transform: rotate(90deg); height: 34px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Bell <span>Guard</span></h1>
+    <p>Bell lends against Coinbase tokenized stocks and never liquidates on a single price print: the next print has to confirm it. Bell Guard turns that one print of warning into protection. A Reactive Network contract sees the falling print and calls back to Base, where the guard pays down the borrower's debt before the confirming print can land.</p>
+    <div class="links">
+      <a href="https://github.com/SuperPhant/bell-guard">Source on GitHub</a>
+      <a id="lRx" href="#">Reactive contract on Lasna</a>
+      <a id="lGuard" href="#">BellGuard on Base Sepolia</a>
+      <a href="https://github.com/SuperPhant/bell-guard/blob/main/docs/latency.md">Every measured loop</a>
+    </div>
+    <div class="tiles">
+      <div class="tile"><b id="tMedian">–</b><small>median full loop, falling print → guard on Base</small></div>
+      <div class="tile"><b id="tP90">–</b><small>90th percentile</small></div>
+      <div class="tile"><b id="tLoops">–</b><small>loops measured on-chain</small></div>
+      <div class="tile"><b id="tRescues">–</b><small>positions deleveraged by the guard</small></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2>The loop</h2>
+    <p class="sub">Every step is an on-chain transaction. Times are read from Base's BaseTime predeploy, which gives each 200 ms block a millisecond timestamp.</p>
+    <div class="loop">
+      <div class="step"><div class="chain">Base Sepolia</div><h3>1 · A falling print</h3><p>A Bell market records a new price round for a stock and emits <code>Observed</code>. Bell still prices liquidations at the higher of the last two prints, so nobody can be liquidated yet.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="chain">Reactive Lasna</div><h3>2 · BellGuardReactive</h3><p>Keeps the last print of every stock it watches. If the new print is lower, it requests a callback to Base. Rises and flat prints cost nothing more. If a sweep runs out of gas, it asks for the rest.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="chain">Base Sepolia</div><h3>3 · BellGuard</h3><p>Values each protected position at the lower print, which is what the confirming print will make real. Below the borrower's trigger, it repays from the borrower's own tUSD up to their budget, back to their target.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Live feed <span class="status"><span class="dot"></span><span id="feedStatus">connecting…</span></span></h2>
+    <p class="sub">Prints, callbacks, rescues and liquidation attempts on the sandbox market and the live Bell market, as they land on Base Sepolia. Run a crash in the sandbox with <code>npx tsx src/race.ts</code> and watch it here.</p>
+    <ul class="feed" id="feed"></ul>
+  </section>
+
+  <div class="grid2">
+    <section>
+      <h2>Races against the confirming print</h2>
+      <p class="sub">Sandbox runs: two identical TSLA borrowers at Bell's limit, one protected. A −16% slide, then a −15% gap, then the confirming print and an immediate liquidation attempt on both.</p>
+      <table>
+        <thead><tr><th>Confirming print after</th><th class="num">Guard loop</th><th>Protected</th><th>Unprotected</th></tr></thead>
+        <tbody id="races"></tbody>
+      </table>
+      <p class="note" id="raceNote"></p>
+    </section>
+    <section>
+      <h2>Loop latency</h2>
+      <p class="sub">Each bar is one loop, from the block with the falling print to the block where the guard ran.</p>
+      <div class="bars" id="bars"></div>
+      <div class="legend"><i style="background:var(--accent)"></i>sandbox<i style="background:var(--blue)"></i>live Bell market · <span id="barScale"></span></div>
+      <table style="margin-top:12px">
+        <thead><tr><th>Market</th><th>Stock</th><th class="num">Print</th><th class="num">Loop</th><th>Callback</th></tr></thead>
+        <tbody id="loops"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <div class="grid2">
+    <section>
+      <h2>A protected position on the live market</h2>
+      <p class="sub">TSLA, MSTR and NVDA collateral on the Bell market that Bell's keeper feeds with real Chainlink prints (relayed every two hours while US stocks trade). Its trigger sits just under its health, so ordinary down moves make the guard act.</p>
+      <div class="kv" id="livePos"><span>Loading…</span><b></b></div>
+    </section>
+    <section>
+      <h2>Protect your own Bell position</h2>
+      <p class="sub">Borrow on <a href="https://superphant.github.io/bell/">Bell</a> (Base Sepolia), then opt in here. The guard only ever pulls the market's tUSD from your wallet, up to your budget, and only to repay your own debt.</p>
+      <div id="me" class="note">Connect a wallet on Base Sepolia to see your position.</div>
+      <form class="protect" onsubmit="return false">
+        <div><label>Act below health</label><input id="fTrigger" value="1.25"></div>
+        <div><label>Repay back to health</label><input id="fTarget" value="1.40"></div>
+        <div><label>Budget (tUSD)</label><input id="fBudget" value="1000"></div>
+      </form>
+      <button id="bConnect">Connect wallet</button>
+      <button id="bApprove" disabled>1 · Approve tUSD</button>
+      <button id="bProtect" class="primary" disabled>2 · Protect</button>
+      <button id="bUnprotect" disabled>Unprotect</button>
+      <p class="note" id="txNote"></p>
+    </section>
+  </div>
+</main>
+<footer>Testnet only (Base Sepolia + Reactive Lasna). Built for the Reactive Omni Buildathon, with AI coding assistance. Not audited.</footer>
+
+<script type="module">
+const C = {
+  rpc: "https://sepolia.base.org",
+  logsRpc: "https://base-sepolia-rpc.publicnode.com",
+  chainId: 84532,
+  guard: "0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F",
+  lab: "0xCfef4E51ab35c5A05EE7633dFe8C7130c286ead6",
+  sandbox: "0x9D016aCe2A6F4a55dee414026F36bc283a67bD24",
+  live: "0x6d9f3290AAEBF3A207D181250548865BA138039C",
+  liveBorrower: "0x68E3AF39a68265DC28961350f43c3ebA964CE425",
+  usd: "0xB200000000000000000001C63E9D844496A7bf10",
+  reactive: "0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44",
+  baseTime: "0x4200000000000000000000000000000000000030",
+  baseScan: "https://sepolia.basescan.org",
+  lasnaScan: "https://lasna.reactscan.net",
+  stocks: {
+    "0xb200000000000000000000166b22bb06299e16d5": "TSLA",
+    "0xb20000000000000000000011e9edc311b3557a24": "MSTR",
+    "0xb200000000000000000000a9e9969eb6b958f57f": "NVDA",
+    "0xb200000000000000000000781e561248828cb6ad": "AAPL",
+    "0xb2000000000000000000000c127c82ae2972cb39": "AMZN",
+    "0xb2000000000000000000002bdc5d605a706b49f7": "GOOGL",
+    "0xb200000000000000000000fd2893c6d97d29321e": "META",
+    "0xb20000000000000000000021cee632403e68f510": "MSFT",
+    "0xb200000000000000000000995283cb2bde1bafca": "SNDK",
+    "0xb2000000000000000000004481a4f760a3bd2cb7": "SPCX",
+  },
+};
+const T = {
+  printHandled: "0x931a5841ca6a19a5be9bce637df413c0707085f7275fb532b64dac8bff14ce3c",
+  guarded: "0xb9d022f331fbb1a5bf6e4b4d79e508a475491e8c8d6e7a9402be1fb0b590c76e",
+  guardFailed: "0x96dbc07050151951d0006d65fbdc5aaf8592466e66f630b0943cf55d205b040f",
+  sweepPaused: "0x5cec9a3346bbe1e6724d4de957cba73ac864386525ce17b8c37b3f4fa2b279ac",
+  printed: "0x6cefef2f3aa4b83fbabbc78f4b7733bbca18878d6224465824124047247ae696",
+  liquidation: "0x5d8e37b74ef9b8a250b89debf38296de7e1f862c71106ce6b8eda2b7e11d0aac",
+  pairOpened: "0xebc2da502ef029dc65472c03c92da00b1f3962bccb307b9bf5f9eed26a20d5bd",
+  observed: "0xdb7034a38dc9101ee8f0aea0970558d3649c5a6c5e6b181b89f0484ddcf6f60c",
+  protected: "0x7a69845921b30cb739b0a4aae64df9aea81ad331cfde300ef46a1661e943e487",
+};
+const S = {
+  protectionOf: "0x24b3ae8c", pessimisticHealthOf: "0xf3c473aa", printsHandled: "0x0573bb05", rescues: "0xbe8384c5",
+  debtOf: "0xd283e75f", healthFactorOf: "0x76ddc894", approve: "0x095ea7b3", allowance: "0xdd62ed3e",
+  balanceOf: "0x70a08231", protect: "0xc1bb22a3", unprotect: "0xad2df2b9", timestampMs: "0x5745a677",
+};
+
+const $ = (id) => document.getElementById(id);
+const lc = (a) => a.toLowerCase();
+const pad = (h) => h.replace(/^0x/, "").padStart(64, "0");
+const enc = (...words) => words.map((w) => (typeof w === "bigint" ? w.toString(16) : w)).map(pad).join("");
+const word = (data, i) => BigInt("0x" + (data.slice(2 + 64 * i, 2 + 64 * (i + 1)) || "0"));
+const sint = (w) => (w >= 1n << 255n ? w - (1n << 256n) : w);
+const topicAddr = (t) => "0x" + t.slice(26);
+const short = (a) => a.slice(0, 6) + "…" + a.slice(-4);
+const usd = (v, d = 6) => "$" + (Number(v) / 10 ** d).toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const hf = (v) => (v > 10n ** 30n ? "∞" : (Number(v) / 1e18).toFixed(3));
+const stock = (a) => C.stocks[lc(a)] ?? short(a);
+const mkt = (a) => (lc(a) === lc(C.sandbox) ? "sandbox" : lc(a) === lc(C.live) ? "live Bell" : short(a));
+const tx = (h, label) => `<a href="${C.baseScan}/tx/${h}" target="_blank">${label ?? short(h)}</a>`;
+const clock = (ms) => { const d = new Date(Number(ms)); return d.toISOString().slice(11, 23); };
+
+$("lRx").href = `${C.lasnaScan}/address/${C.reactive}`;
+$("lGuard").href = `${C.baseScan}/address/${C.guard}`;
+
+async function rpc(url, method, params) {
+  const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error.message);
+  return j.result;
+}
+const call = (to, data, block = "latest") => rpc(C.rpc, "eth_call", [{ to, data }, block]);
+
+/* ---------- static data from the repo (written by ops/src/report.ts) ---------- */
+async function loadData() {
+  const [loops, races] = await Promise.all([
+    fetch("data/loops.json").then((r) => r.json()).catch(() => null),
+    fetch("data/races.json").then((r) => r.json()).catch(() => []),
+  ]);
+  if (loops) {
+    const s = loops.summary.all;
+    $("tMedian").textContent = s.loops ? (s.medianMs / 1000).toFixed(1) + " s" : "–";
+    $("tP90").textContent = s.loops ? (s.p90Ms / 1000).toFixed(1) + " s" : "–";
+    $("tLoops").textContent = s.loops ?? 0;
+    $("tRescues").textContent = loops.summary.rescues;
+    const max = Math.max(2000, ...loops.loops.map((l) => l.loopMs));
+    $("bars").innerHTML = loops.loops.map((l) => `<div class="${l.market === "live Bell" ? "live" : ""}" style="height:${(100 * l.loopMs) / max}%" title="${l.market} ${l.stock}: ${(l.loopMs / 1000).toFixed(1)} s"></div>`).join("");
+    $("barScale").textContent = `full height = ${(max / 1000).toFixed(1)} s`;
+    $("loops").innerHTML = loops.loops.slice(-8).reverse().map((l) => `<tr><td>${l.market}</td><td>${l.stock}</td><td class="num">−${l.fallPct.toFixed(2)}%</td><td class="num"><b>${(l.loopMs / 1000).toFixed(1)} s</b></td><td>${tx(l.callback.tx)}${l.reactive.tx ? ` · <a href="${C.lasnaScan}/tx/${l.reactive.tx}" target="_blank">Lasna</a>` : ""}</td></tr>`).join("");
+  }
+  $("races").innerHTML = races.slice().reverse().map((r) => {
+    const g = r.guard;
+    const won = !r.guardedLiquidated;
+    return `<tr><td>${(r.confirmAfterWarningMs / 1000).toFixed(1)} s</td><td class="num">${g ? (g.loopMs / 1000).toFixed(1) + " s" : "–"}</td>
+      <td>${won ? `<span class="pill ok">safe</span> repaid ${usd(BigInt(Math.round(g.repaid * 1e6)))}` : `<span class="pill bad">liquidated</span> guard too late`}</td>
+      <td>${r.unguardedLiquidated ? `<span class="pill bad">liquidated</span> lost $${Math.round(r.unguardedPenaltyUsd)}` : `<span class="pill ok">safe</span>`}</td></tr>`;
+  }).join("");
+  const wins = races.filter((r) => !r.guardedLiquidated).length;
+  $("raceNote").textContent = races.length ? `The guard won ${wins} of ${races.length} races. It loses only when the confirming print lands sooner than the loop can run.` : "";
+}
+
+/* ---------- live position ---------- */
+async function livePosition() {
+  const b = C.liveBorrower;
+  const [debt, health, pess, prot, bal] = await Promise.all([
+    call(C.live, S.debtOf + enc(b)),
+    call(C.live, S.healthFactorOf + enc(b)),
+    call(C.guard, S.pessimisticHealthOf + enc(C.live, b)),
+    call(C.guard, S.protectionOf + enc(C.live, b)),
+    call(C.usd, S.balanceOf + enc(b)),
+  ]);
+  $("livePos").innerHTML = `
+    <span>Borrower</span><b><a href="${C.baseScan}/address/${b}" target="_blank">${short(b)}</a></b>
+    <span>Debt</span><b>${usd(BigInt(debt))}</b>
+    <span>Health (Bell, higher print)</span><b>${hf(BigInt(health))}</b>
+    <span>Pessimistic health (lower print)</span><b>${hf(BigInt(pess))}</b>
+    <span>Guard acts below</span><b>${hf(word(prot, 0))} → repays to ${hf(word(prot, 1))}</b>
+    <span>Budget used</span><b>${usd(word(prot, 3))} of ${usd(word(prot, 2))}</b>
+    <span>tUSD left in wallet</span><b>${usd(BigInt(bal))}</b>`;
+}
+
+/* ---------- live feed ---------- */
+const seen = new Set();
+let anchor;
+async function msOf(block) {
+  if (!anchor || block > anchor.block) {
+    const n = BigInt(await rpc(C.rpc, "eth_blockNumber", []));
+    anchor = { block: n, ms: BigInt(await call(C.baseTime, S.timestampMs, "0x" + n.toString(16))) };
+  }
+  return anchor.ms - (anchor.block - block) * 200n;
+}
+
+function describe(l) {
+  const t0 = l.topics[0];
+  const d = l.data;
+  if (t0 === T.observed) {
+    const answer = sint(word(d, 1));
+    return { icon: "🔔", text: `<b>${stock(topicAddr(l.topics[1]))}</b> print $${(Number(answer) / 1e8).toFixed(2)} on the ${mkt(l.address)} market <small>Base block ${l.block}</small>` };
+  }
+  if (t0 === T.printHandled) {
+    const prev = sint(word(d, 1)), answer = sint(word(d, 2)), origin = word(d, 3), lasnaBlock = word(d, 4), at = word(d, 6), rescued = word(d, 8);
+    const fall = (Number(prev - answer) / Number(prev)) * 100;
+    return { icon: "⚡", cls: "alarm", origin, at, text: `Reactive called the guard back for a <b>−${fall.toFixed(2)}%</b> ${stock(topicAddr(l.topics[2]))} print · <b>LOOP</b> · Lasna block ${lasnaBlock} · ${rescued} rescued <small>${tx(l.tx)}</small>` };
+  }
+  if (t0 === T.guarded) {
+    const repaid = word(d, 1), before = word(d, 2), after = word(d, 3);
+    return { icon: "🛡️", cls: "big", text: `Guard repaid <b>${usd(repaid)}</b> for ${short(topicAddr(l.topics[2]))} · pessimistic health ${hf(before)} → <b>${hf(after)}</b>` };
+  }
+  if (t0 === T.guardFailed) return { icon: "⚠️", text: `Guard could not act for ${short(topicAddr(l.topics[2]))}` };
+  if (t0 === T.sweepPaused) return { icon: "⏸️", text: `Guard paused its sweep at account ${word(d, 4)}; Reactive will continue it` };
+  if (t0 === T.liquidation) {
+    const ok = word(d, 0) === 1n, health = word(d, 1), at = word(d, 4);
+    return ok
+      ? { icon: "💥", cls: "dead", at, text: `Liquidator <b>seized</b> collateral from ${short(topicAddr(l.topics[2]))} (health ${hf(health)})` }
+      : { icon: "✅", cls: "big", at, text: `Liquidation attempt on ${short(topicAddr(l.topics[2]))} <b>failed</b>: health ${hf(health)}` };
+  }
+  if (t0 === T.pairOpened) return { icon: "🏦", text: `Two identical borrowers open TSLA loans at Bell's limit (${usd(word(d, 3))} each)` };
+  if (t0 === T.protected) return { icon: "🔒", text: `${short(topicAddr(l.topics[2]))} opted into Bell Guard on the ${mkt(topicAddr(l.topics[1]))} market` };
+  return null;
+}
+
+let firstPoll = true;
+async function poll() {
+  try {
+    const latest = BigInt(await rpc(C.logsRpc, "eth_blockNumber", []));
+    const from = latest - (firstPoll ? 3000n : 150n);
+    const logs = await rpc(C.logsRpc, "eth_getLogs", [{
+      address: [C.guard, C.lab, C.sandbox, C.live],
+      fromBlock: "0x" + from.toString(16), toBlock: "latest",
+      topics: [[T.observed, T.printHandled, T.guarded, T.guardFailed, T.sweepPaused, T.liquidation, T.pairOpened, T.protected]],
+    }]);
+    const fresh = [];
+    for (const raw of logs) {
+      const key = raw.transactionHash + ":" + raw.logIndex;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      fresh.push({ ...raw, block: BigInt(raw.blockNumber), tx: raw.transactionHash });
+    }
+    fresh.sort((a, b) => (a.block === b.block ? Number(BigInt(a.logIndex) - BigInt(b.logIndex)) : a.block < b.block ? -1 : 1));
+    for (const l of fresh) {
+      const e = describe(l);
+      if (!e) continue;
+      const ms = e.at ?? (await msOf(l.block));
+      if (e.origin) e.text = e.text.replace("<b>LOOP</b>", `<b>${((Number(ms) - Number(await msOf(e.origin))) / 1000).toFixed(1)} s</b> after the print`);
+      const li = document.createElement("li");
+      if (e.cls) li.className = e.cls;
+      li.innerHTML = `<span class="t">${clock(ms)}</span><span class="i">${e.icon}</span><span class="d">${e.text}</span>`;
+      $("feed").prepend(li);
+    }
+    while ($("feed").children.length > 120) $("feed").lastChild.remove();
+    firstPoll = false;
+    $("feedStatus").textContent = `watching Base Sepolia · block ${latest}`;
+    if (fresh.some((l) => l.topics[0] === T.guarded || l.topics[0] === T.observed)) livePosition().catch(() => {});
+  } catch (e) {
+    $("feedStatus").textContent = "RPC error, retrying: " + e.message;
+  }
+  setTimeout(poll, 1000);
+}
+
+/* ---------- wallet ---------- */
+let me;
+async function refreshMe() {
+  if (!me) return;
+  const [debt, health, pess, prot, allow, bal] = await Promise.all([
+    call(C.live, S.debtOf + enc(me)), call(C.live, S.healthFactorOf + enc(me)),
+    call(C.guard, S.pessimisticHealthOf + enc(C.live, me)), call(C.guard, S.protectionOf + enc(C.live, me)),
+    call(C.usd, S.allowance + enc(me, C.guard)), call(C.usd, S.balanceOf + enc(me)),
+  ]);
+  const trig = word(prot, 0);
+  $("me").innerHTML = `<b>${short(me)}</b> on the live Bell market · debt ${usd(BigInt(debt))} · health ${hf(BigInt(health))} · pessimistic ${hf(BigInt(pess))} · tUSD ${usd(BigInt(bal))} · allowance ${usd(BigInt(allow))}<br>` +
+    (trig ? `<span class="pill ok">protected</span> acts below ${hf(trig)}, repays to ${hf(word(prot, 1))}, budget ${usd(word(prot, 3))} used of ${usd(word(prot, 2))}` : `<span class="pill warn">not protected</span>`);
+  $("bUnprotect").disabled = !trig;
+}
+async function send(data, to) {
+  const hash = await window.ethereum.request({ method: "eth_sendTransaction", params: [{ from: me, to, data }] });
+  $("txNote").innerHTML = `Sent ${tx(hash)} · waiting…`;
+  for (let i = 0; i < 60; i++) {
+    const r = await rpc(C.rpc, "eth_getTransactionReceipt", [hash]);
+    if (r) { $("txNote").innerHTML = `${r.status === "0x1" ? "Confirmed" : "Reverted"}: ${tx(hash)}`; break; }
+    await new Promise((res) => setTimeout(res, 700));
+  }
+  await refreshMe();
+}
+const wad = (s) => BigInt(Math.round(Number(s) * 1e6)) * 10n ** 12n;
+$("bConnect").onclick = async () => {
+  if (!window.ethereum) { $("me").textContent = "No browser wallet found."; return; }
+  [me] = await window.ethereum.request({ method: "eth_requestAccounts" });
+  try { await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x14a34" }] }); } catch {}
+  $("bApprove").disabled = $("bProtect").disabled = false;
+  await refreshMe();
+};
+$("bApprove").onclick = () => send(S.approve + enc(C.guard, BigInt(Math.round(Number($("fBudget").value) * 1e6))), C.usd);
+$("bProtect").onclick = () => send(S.protect + enc(C.live, wad($("fTrigger").value), wad($("fTarget").value), BigInt(Math.round(Number($("fBudget").value) * 1e6))), C.guard);
+$("bUnprotect").onclick = () => send(S.unprotect + enc(C.live), C.guard);
+
+loadData();
+livePosition().catch((e) => ($("livePos").textContent = "Could not read the position: " + e.message));
+poll();
+</script>
+</body>
+</html>
