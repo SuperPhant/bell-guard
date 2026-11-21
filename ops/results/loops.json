@@ -1,26 +1,26 @@
 {
   "summary": {
-    "generatedAt": "2026-11-21T08:26:30.258Z",
+    "generatedAt": "2026-11-21T08:40:16.487Z",
     "guard": "0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F",
     "reactive": "0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44",
     "all": {
-      "loops": 7,
+      "loops": 9,
       "minMs": 1000,
-      "medianMs": 1400,
+      "medianMs": 1600,
       "p90Ms": 1800,
       "maxMs": 1800
     },
     "sandbox": {
-      "loops": 7,
+      "loops": 9,
       "minMs": 1000,
-      "medianMs": 1400,
+      "medianMs": 1600,
       "p90Ms": 1800,
       "maxMs": 1800
     },
     "live": {
       "loops": 0
     },
-    "rescues": 2
+    "rescues": 3
   },
   "loops": [
     {
@@ -190,6 +190,52 @@
       "checked": 1,
       "rescued": 1,
       "repaidUsd": 4145.514849
+    },
+    {
+      "market": "sandbox",
+      "stock": "TSLA",
+      "roundId": "24",
+      "fallPct": 16,
+      "origin": {
+        "block": 61641153,
+        "atMs": 1795250099400
+      },
+      "reactive": {
+        "block": 8879464
+      },
+      "callback": {
+        "block": 61641162,
+        "atMs": 1795250101200,
+        "tx": "0xbc6a568fbc9db5fe67aeedc0c6c006c5b1db0e688c3e1ec45e1aa4dd8962529c"
+      },
+      "loopMs": 1800,
+      "loopBlocks": 9,
+      "checked": 0,
+      "rescued": 0,
+      "repaidUsd": 0
+    },
+    {
+      "market": "sandbox",
+      "stock": "TSLA",
+      "roundId": "26",
+      "fallPct": 15,
+      "origin": {
+        "block": 61641265,
+        "atMs": 1795250121800
+      },
+      "reactive": {
+        "block": 8879485
+      },
+      "callback": {
+        "block": 61641273,
+        "atMs": 1795250123400,
+        "tx": "0xe1d483cb51337f342d89f7169bc03face163e9b5e8a43ab95359e3662b06d449"
+      },
+      "loopMs": 1600,
+      "loopBlocks": 8,
+      "checked": 1,
+      "rescued": 1,
+      "repaidUsd": 4145.515155
     }
   ]
 }

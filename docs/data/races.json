@@ -109,5 +109,42 @@
     "unguardedLiquidated": true,
     "unguardedSeized": 30.11204505,
     "unguardedPenaltyUsd": 520.3575034821588
+  },
+  {
+    "at": "2026-11-21T08:35:43.710Z",
+    "note": "demo video",
+    "pairId": 3,
+    "prices": {
+      "start": 346.905,
+      "slide": 291.4002,
+      "warning": 247.69017
+    },
+    "guardedHealthBeforeWarning": 1.1549999814383625,
+    "requestedDelayMs": 20000,
+    "warning": {
+      "tx": "0xa8cc5720b341640c9876b9ebf95e2b91946aaaccb778b887f46d268a308ea80c",
+      "block": 61641265,
+      "atMs": 1795250121800
+    },
+    "confirming": {
+      "tx": "0x7d1f622ce96ad1d4f1df70ab6cf73496be09a013ef8c876bae37d77573d076b6",
+      "block": 61641365,
+      "atMs": 1795250141800
+    },
+    "confirmAfterWarningMs": 20000,
+    "guard": {
+      "tx": "0xe1d483cb51337f342d89f7169bc03face163e9b5e8a43ab95359e3662b06d449",
+      "block": 61641273,
+      "atMs": 1795250123400,
+      "loopMs": 1600,
+      "loopBlocks": 8,
+      "repaid": 4145.515155,
+      "beforeConfirmingPrint": true
+    },
+    "slideLoopMs": 1800,
+    "guardedLiquidated": false,
+    "unguardedLiquidated": true,
+    "unguardedSeized": 30.11204608,
+    "unguardedPenaltyUsd": 520.3575196030333
   }
 ]

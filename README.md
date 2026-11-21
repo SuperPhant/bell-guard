@@ -9,12 +9,13 @@ Built for the [Reactive Omni Buildathon](https://dorahacks.io/hackathon/reactive
 **Every Second Counts** (Base Sepolia + Reactive Lasna).
 
 - **Dashboard (live feed, latency, races):** https://superphant.github.io/bell-guard/
+- **Demo video (2:36):** https://superphant.github.io/bell-guard/demo.mp4
 - **Every measured loop, with transaction links:** [docs/latency.md](docs/latency.md)
 - **Reactive contract:** [`0x7520A38E…0A44` on Reactscan](https://lasna.reactscan.net/address/0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44)
 - **Guard:** [`0x47FfAB78…A40F` on Basescan](https://sepolia.basescan.org/address/0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F)
 
 Measured on-chain so far: the full loop (falling print on Base → Reactive Lasna → guard running on Base) takes
-**1.0–1.8 s, median 1.4 s**. In sandbox crashes, the protected borrower survived every race in which the confirming
+**1.0–1.8 s, median 1.6 s**. In sandbox crashes, the protected borrower survived every race in which the confirming
 print came later than the loop, and its unprotected twin lost **$520** to the liquidation bonus each time.
 
 ## The problem
@@ -84,7 +85,7 @@ A loop starts in the Base Sepolia block where the falling print was recorded and
 the guard ran. Both ends come from Base's [BaseTime predeploy](https://github.com/base/base-std)
 (`0x4200…0030`, millisecond block timestamps, 200 ms blocks), so both are on one clock and exact to the block.
 
-**7 loops so far: median 1.4 s, 90th percentile 1.8 s, fastest 1.0 s (5 blocks), slowest 1.8 s (9 blocks).**
+**9 loops by submission: median 1.6 s, 90th percentile 1.8 s, fastest 1.0 s (5 blocks), slowest 1.8 s (9 blocks).**
 [docs/latency.md](docs/latency.md) lists every loop with its Base and Lasna transactions; a
 [workflow](.github/workflows/report.yml) refreshes it hourly, including loops on the live market.
 
@@ -101,7 +102,8 @@ same transaction by liquidation attempts on both.
 
 | Confirming print after the gap | Guard loop | Protected borrower | Unprotected twin |
 |---|---|---|---|
-| 4.8 s | 1.6 s | safe; $4,145.51 repaid from its own wallet | liquidated, lost $520 |
+| 20.0 s (filmed for the demo video) | 1.6 s | safe; $4,145.52 repaid from its own wallet | liquidated, lost $520 |
+| 4.8 s | 1.6 s | safe; $4,145.51 repaid | liquidated, lost $520 |
 | 1.6 s | 1.0 s | safe; $4,145.51 repaid | liquidated, lost $520 |
 | 0.4 s | 1.8 s | liquidated: the guard arrived 1.4 s too late | liquidated, lost $520 |
 

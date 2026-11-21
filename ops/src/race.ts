@@ -24,6 +24,7 @@ function arg(name: string, fallback: string): string {
 }
 
 const delayMs = Number(arg("delay", "3000"));
+const pauseMs = Number(arg("pause", "0")); // extra wait after opening the pair and after arming (for filming)
 const drop = Number(arg("drop", "0.15"));
 const slide = Number(arg("slide", "0.16"));
 const note = arg("note", "");
@@ -97,6 +98,7 @@ async function main() {
   const opened = await tx("openPair", [d.tsla, UNITS, RESERVE]);
   const pair = parseEventLogs({ abi: labAbi, logs: opened.logs, eventName: "PairOpened" })[0].args;
   console.log(`pair ${pair.pairId}: guarded ${pair.guarded}, unguarded ${pair.unguarded}, debt $${Number(pair.debt) / 1e6} each`);
+  if (pauseMs) await sleep(pauseMs);
 
   // 3. The slide.
   const p1 = scale(start, slide);
@@ -107,6 +109,7 @@ async function main() {
   // 4. Arm.
   await tx("arm", [pair.pairId, TRIGGER, TARGET, RESERVE]);
   const hfBefore = await pub.readContract({ address: d.sandboxMarket, abi: marketAbi, functionName: "healthFactorOf", args: [pair.guarded] });
+  if (pauseMs) await sleep(pauseMs);
 
   // 5. The warning print and 6. the confirming print are signed up front (consecutive nonces), so the gap between
   //    them is only the requested delay plus inclusion, not receipt polling.
