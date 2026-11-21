@@ -31,6 +31,15 @@ print. That is the window to act in, and it can be a few seconds long. Nobody wa
 keeper bot can, but it is off-chain infrastructure someone has to run, fund and trust. Bell Guard is that watcher,
 built from contracts only.
 
+**Why the confirming print matters.** On a lending market that liquidates on a single print, a gap is lost before any
+guard can move: a liquidator's transaction lands in the same block as the new price. Automated protection there can only
+act early, on a slow slide toward the threshold. Bell's two-print rule turns a gap into a race a 1–2 s guard can win,
+because the liquidator has to wait for the next print, and tokenized stocks gap at every open.
+
+**It repays, it does not sell.** The guard pays down debt with spare tUSD the borrower set aside for it, so the
+borrower keeps every share and the upside when the stock recovers. A stop-loss would have sold the shares at the low
+print; a liquidation would have taken them with a bonus on top.
+
 ## How it works
 
 ```mermaid
