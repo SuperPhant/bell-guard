@@ -3,11 +3,10 @@ name: report
 # Refreshes the latency report and the dashboard data (docs/data) from the chain: BellGuard's events on Base
 # Sepolia, matched with BellGuardReactive's transactions on Reactive Lasna (only reachable from some networks, so it
 # runs here). Commits only when something changed.
+# Runs hourly at :25 UTC on weekdays (live Bell prints are relayed every two hours while US stocks trade) and once a
+# day at 06:25 UTC at weekends (sandbox races); tick.yml dispatches it on that schedule.
 
 on:
-  schedule:
-    - cron: "25 * * * 1-5" # hourly on weekdays; live Bell prints are relayed every two hours while US stocks trade
-    - cron: "25 6 * * 0,6" # once a day at weekends (sandbox races)
   workflow_dispatch:
 
 permissions:

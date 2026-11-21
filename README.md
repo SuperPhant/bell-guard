@@ -97,7 +97,9 @@ the guard ran. Both ends come from Base's [BaseTime predeploy](https://github.co
 
 **9 loops by submission: median 1.6 s, 90th percentile 1.8 s, fastest 1.0 s (5 blocks), slowest 1.8 s (9 blocks).**
 [docs/latency.md](docs/latency.md) lists every loop with its Base and Lasna transactions; a
-[workflow](.github/workflows/report.yml) refreshes it hourly, including loops on the live market.
+[workflow](.github/workflows/report.yml) refreshes it hourly on weekdays, including loops on the live market
+([`tick.yml`](.github/workflows/tick.yml) starts it on that schedule, because GitHub's own cron trigger ran hours late
+here).
 
 Lasna's block timestamps are whole seconds and ran about 1.4 s behind Base's clock when we compared them, so the report
 splits the loop by blocks rather than subtracting timestamps from two different chains.
