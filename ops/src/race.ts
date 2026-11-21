@@ -16,7 +16,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { decodeEventLog, encodeFunctionData, parseEventLogs, type Hash, type Hex } from "viem";
-import { blockMs, confirm, deployment as d, guardAbi, labAbi, marketAbi, pub, root, sleep, wallet } from "./lib.js";
+import { confirm, deployment as d, guardAbi, labAbi, logsPub, marketAbi, pub, root, sleep, wallet } from "./lib.js";
 
 function arg(name: string, fallback: string): string {
   const i = process.argv.indexOf(`--${name}`);
@@ -53,7 +53,7 @@ type Handled = { tx: Hash; block: bigint; handledAtMs: bigint; originBlock: bigi
 async function handled(roundId: bigint, fromBlock: bigint, timeoutMs = 90_000): Promise<Handled | undefined> {
   const until = Date.now() + timeoutMs;
   while (Date.now() < until) {
-    const logs = await pub.getLogs({
+    const logs = await logsPub.getLogs({
       address: d.guard,
       event: guardAbi.find((x) => x.type === "event" && x.name === "PrintHandled") as any,
       args: { market: d.sandboxMarket },

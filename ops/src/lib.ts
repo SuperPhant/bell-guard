@@ -46,10 +46,13 @@ export const lasnaDeployment: { reactive: Address; deployTx: Hash } | undefined 
   : undefined;
 
 export const BASE_RPC = process.env.BASE_SEPOLIA_RPC ?? "https://sepolia.base.org";
+/** sepolia.base.org caps eth_getLogs at 200 blocks (40 s), so log scans use a node that allows wide ranges. */
+export const BASE_LOGS_RPC = process.env.BASE_SEPOLIA_LOGS_RPC ?? "https://base-sepolia-rpc.publicnode.com";
 export const BASE_TIME: Address = "0x4200000000000000000000000000000000000030";
 export const BLOCK_MS = 200;
 
 export const pub = createPublicClient({ chain: baseSepolia, transport: http(BASE_RPC), pollingInterval: 100 });
+export const logsPub = createPublicClient({ chain: baseSepolia, transport: http(BASE_LOGS_RPC) });
 
 export function wallet() {
   const key = process.env.DEPLOYER_KEY as Hex | undefined;
@@ -105,9 +108,19 @@ export const tokenAbi = parseAbi([
 
 export const timeAbi = parseAbi(["function timestampMs() view returns (uint64)"]);
 
-/** Millisecond timestamp of a Base block, from the BaseTime predeploy's state after that block. */
+/** Millisecond timestamp of a Base block, from the BaseTime predeploy's state after that block. If the node has
+ *  pruned that state, it is derived from a recent anchor: Base Sepolia blocks are exactly 200 ms apart. */
+let anchor: { block: bigint; ms: bigint } | undefined;
 export async function blockMs(blockNumber: bigint): Promise<bigint> {
-  return pub.readContract({ address: BASE_TIME, abi: timeAbi, functionName: "timestampMs", blockNumber });
+  try {
+    return await pub.readContract({ address: BASE_TIME, abi: timeAbi, functionName: "timestampMs", blockNumber });
+  } catch {
+    if (!anchor) {
+      const block = await pub.getBlockNumber();
+      anchor = { block, ms: await pub.readContract({ address: BASE_TIME, abi: timeAbi, functionName: "timestampMs", blockNumber: block }) };
+    }
+    return anchor.ms - (anchor.block - blockNumber) * BigInt(BLOCK_MS);
+  }
 }
 
 export async function confirm(hash: Hash): Promise<TransactionReceipt> {
