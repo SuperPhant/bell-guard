@@ -1,0 +1,47 @@
+name: lasna
+
+# Reactive Lasna is only reachable from some networks, so every Lasna read and transaction for this repo runs here.
+# The input is a bash snippet (one command per line) run from contracts/ with Foundry installed.
+# $LASNA_RPC and $REACTIVE_KEY (the Lasna operator wallet, testnet only) are available to it.
+
+on:
+  workflow_dispatch:
+    inputs:
+      cmd:
+        description: Commands to run (bash, one per line, from contracts/)
+        required: true
+        type: string
+
+concurrency:
+  group: lasna
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts
+    env:
+      LASNA_RPC: https://lasna-rpc.rnk.dev/
+      BASE_SEPOLIA_RPC: https://sepolia.base.org
+      REACTIVE_KEY: ${{ secrets.REACTIVE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.10.0
+
+      - name: Run
+        env:
+          CMD: ${{ inputs.cmd }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$CMD" > "$RUNNER_TEMP/cmd.sh"
+          echo "----- commands"
+          cat "$RUNNER_TEMP/cmd.sh"
+          echo "----- output"
+          bash -euo pipefail "$RUNNER_TEMP/cmd.sh"
