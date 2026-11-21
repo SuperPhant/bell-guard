@@ -1,0 +1,16 @@
+name: probe
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reactive Lasna RPC reachable from GitHub runners
+        run: |
+          curl -s -X POST -H 'Content-Type: application/json' \
+            --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' https://lasna-rpc.rnk.dev/
+          echo
+          curl -s -X POST -H 'Content-Type: application/json' \
+            --data '{"jsonrpc":"2.0","id":1,"method":"eth_getBalance","params":["0x3EeE68432E42cA90b1B9500732bB958E25155AFA","latest"]}' https://lasna-rpc.rnk.dev/
