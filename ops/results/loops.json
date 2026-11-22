@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generatedAt": "2026-11-21T08:40:16.487Z",
+    "generatedAt": "2026-11-22T23:22:20.039Z",
     "guard": "0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F",
     "reactive": "0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44",
     "all": {
@@ -201,7 +201,8 @@
         "atMs": 1795250099400
       },
       "reactive": {
-        "block": 8879464
+        "block": 8879464,
+        "tx": "0x269afe0e11b4727ad749b626d392aad0922c025a7fb6b2cd4a96e3461525f7f6"
       },
       "callback": {
         "block": 61641162,
@@ -224,7 +225,8 @@
         "atMs": 1795250121800
       },
       "reactive": {
-        "block": 8879485
+        "block": 8879485,
+        "tx": "0xc5e4d30bcafee651cd2cd88233459d8f127062ee5c6345cb5c6ea728baadb512"
       },
       "callback": {
         "block": 61641273,
