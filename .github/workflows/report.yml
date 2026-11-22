@@ -37,9 +37,20 @@ jobs:
 
       - name: Reactive transactions from Lasna
         run: |
-          cast logs --address "$REACTIVE" --from-block 8877000 --to-block latest --rpc-url "$LASNA_RPC" --json \
-            | jq -c '[.[] | {blockNumber, transactionHash, topics, data}]' > ops/results/lasna-logs.json
-          echo "$(jq length ops/results/lasna-logs.json) logs"
+          set -euo pipefail
+          # Lasna's RPC answers eth_getLogs for at most 30,000 blocks per request, so read the range in windows.
+          head=$(cast block-number --rpc-url "$LASNA_RPC")
+          from=8877000
+          : > "$RUNNER_TEMP/logs.ndjson"
+          while [ "$from" -le "$head" ]; do
+            to=$(( from + 25000 - 1 ))
+            if [ "$to" -gt "$head" ]; then to=$head; fi
+            cast logs --address "$REACTIVE" --from-block "$from" --to-block "$to" --rpc-url "$LASNA_RPC" --json \
+              | jq -c '.[] | {blockNumber, transactionHash, topics, data}' >> "$RUNNER_TEMP/logs.ndjson"
+            from=$(( to + 1 ))
+          done
+          jq -s -c '.' "$RUNNER_TEMP/logs.ndjson" > ops/results/lasna-logs.json
+          echo "$(jq length ops/results/lasna-logs.json) logs up to Lasna block $head"
 
       - name: Report
         working-directory: ops
