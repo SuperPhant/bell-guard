@@ -1,12 +1,12 @@
 # Full-loop latency
 
-Generated 2026-11-23 21:49 UTC by `ops/src/report.ts` from BellGuard's own events.
+Generated 2026-11-23 23:50 UTC by `ops/src/report.ts` from BellGuard's own events.
 
 A loop starts in the Base Sepolia block where a Bell market records a falling print (the `Observed` log Reactive
 picks up) and ends in the Base Sepolia block where BellGuard runs. Both ends are read from Base's BaseTime
 predeploy (millisecond block timestamps, 200 ms blocks), so the figures are on one clock.
 
-**15 loops: median 1.0 s, 90th percentile 1.8 s, fastest 0.8 s, slowest 1.8 s.**
+**16 loops: median 1.0 s, 90th percentile 1.8 s, fastest 0.8 s, slowest 1.8 s.**
 
 | # | Market | Stock | Print | Origin block | Reactive (Lasna block) | Callback block | Blocks | Loop | Repaid |
 |---|---|---|---|---|---|---|---|---|---|
@@ -25,3 +25,4 @@ predeploy (millisecond block timestamps, 200 ms blocks), so the figures are on o
 | 13 | live Bell | TSLA | -0.22% | 62696200 | [9078271](https://lasna.reactscan.net/tx/0x8f86a1bd96cd1b5a294fada052901ef4f2f3ae74d4c62455bd5d7b255e1d1138) | [62696206](https://sepolia.basescan.org/tx/0xa2eb9078809f6fd7e347eab47047ba1007aee0ee52afc7bd8053bddc665e2c71) | 6 | **1.2 s** | - |
 | 14 | live Bell | MSTR | -0.13% | 62732314 | [9085088](https://lasna.reactscan.net/tx/0x25f51108e080036bb32acfb2ecdc71725698addbb04191b5bbf5defb92953d63) | [62732318](https://sepolia.basescan.org/tx/0x16b3e60006cd41a72c99dad255d98bcb67c54d1e80cbfc6ec4c57a09324267f1) | 4 | **0.8 s** | - |
 | 15 | live Bell | TSLA | -0.58% | 62732314 | [9085088](https://lasna.reactscan.net/tx/0x51f554251c98d99d4aa7eab7e110c7845dd9934a9d72d57856a800bb290722a6) | [62732319](https://sepolia.basescan.org/tx/0x24cd97a7ab49b7eecb3498a2ee0b94dce2a2bd017d8aebadf57e09dfb4e9005a) | 5 | **1.0 s** | - |
+| 16 | live Bell | TSLA | -0.56% | 62768462 | [9091900](https://lasna.reactscan.net/tx/0xacd013465062338affaf1adb29df04478364cc1f0dab7f0f10b78bef807160b4) | [62768468](https://sepolia.basescan.org/tx/0x78d1c41f0fb5d835b72b2d6f3bb432d144af4db06120d48bd20400d4c1a3a2d4) | 6 | **1.2 s** | - |
