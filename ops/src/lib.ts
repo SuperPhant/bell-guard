@@ -103,6 +103,7 @@ export const marketAbi = parseAbi([
 
 export const tokenAbi = parseAbi([
   "function approve(address spender, uint256 amount) returns (bool)",
+  "function allowance(address owner, address spender) view returns (uint256)",
   "function balanceOf(address account) view returns (uint256)",
 ]);
 

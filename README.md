@@ -14,9 +14,10 @@ Built for the [Reactive Omni Buildathon](https://dorahacks.io/hackathon/reactive
 - **Reactive contract:** [`0x7520A38E…0A44` on Reactscan](https://lasna.reactscan.net/address/0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44)
 - **Guard:** [`0x47FfAB78…A40F` on Basescan](https://sepolia.basescan.org/address/0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F)
 
-Measured on-chain so far: the full loop (falling print on Base → Reactive Lasna → guard running on Base) takes
-**1.0–1.8 s, median 1.6 s**. In sandbox crashes, the protected borrower survived every race in which the confirming
-print came later than the loop, and its unprotected twin lost **$520** to the liquidation bonus each time.
+Measured on-chain by 24 November: the full loop (falling print on Base → Reactive Lasna → guard running on Base) took
+**0.8–1.2 s on 6 real falling prints** of MSTR, NVDA and TSLA on the live market, and **1.0–1.8 s (median 1.6 s) in 9
+sandbox crashes**. In those crashes, the protected borrower survived every race in which the confirming print came
+later than the loop, and its unprotected twin lost **$520** to the liquidation bonus each time.
 
 ## The problem
 
@@ -95,8 +96,8 @@ keeps a funded hot key, and has to be up at the moment a stock gaps. It is one m
 when it is down nobody notices until a borrower is liquidated. With Reactive the watching is a contract: the
 subscription is the trigger, the state (the last print of every stock) lives on-chain, and the network delivers the
 callback. Measured cost: about 0.014 REACT per print on Lasna (0.27 for the first 20 prints, rises included) and a
-fraction of a cent of gas per callback on Base Sepolia. Measured speed: 1.0–1.8 s from the falling print to the
-repayment. Nothing to run.
+fraction of a cent of gas per callback on Base Sepolia. Measured speed: 0.8–1.8 s from the falling print to the guard
+running on Base. Nothing to run.
 
 ## Measured latency
 
@@ -104,7 +105,8 @@ A loop starts in the Base Sepolia block where the falling print was recorded and
 the guard ran. Both ends come from Base's [BaseTime predeploy](https://github.com/base/base-std)
 (`0x4200…0030`, millisecond block timestamps, 200 ms blocks), so both are on one clock and exact to the block.
 
-**9 loops by submission: median 1.6 s, 90th percentile 1.8 s, fastest 1.0 s (5 blocks), slowest 1.8 s (9 blocks).**
+**9 loops by submission (all sandbox): median 1.6 s, 90th percentile 1.8 s, fastest 1.0 s (5 blocks), slowest 1.8 s
+(9 blocks).** **6 more on the live market on 23 November, on real prints: 0.8–1.2 s (4–6 blocks).**
 [docs/latency.md](docs/latency.md) lists every loop with its Base and Lasna transactions; a
 [workflow](.github/workflows/report.yml) refreshes it hourly on weekdays, including loops on the live market
 ([`tick.yml`](.github/workflows/tick.yml) starts it on that schedule, because GitHub's own cron trigger ran hours late
@@ -152,8 +154,18 @@ The fastest loop, in a race won at a 1.6 s gap:
 The reactive contract also watches the [live Bell market](https://github.com/SuperPhant/bell), which Bell's keeper feeds
 with real Chainlink prints of Coinbase's tokenized stocks (relayed every two hours while US stocks trade). A protected
 position there ([`0x68E3…E425`](https://sepolia.basescan.org/address/0x68E3AF39a68265DC28961350f43c3ebA964CE425):
-TSLA, MSTR and NVDA, borrowed to Bell's limit) has its trigger just under its health, so ordinary down moves make the
-guard act. Every falling print of those stocks is a measured loop on real prices; the dashboard shows them as they land.
+TSLA, MSTR and NVDA, borrowed to Bell's limit) keeps its trigger just under its pessimistic health, so ordinary down
+moves make the guard repay, not only crashes. Every falling print of those stocks is a measured loop on real prices;
+the dashboard shows them as they land.
+
+On Monday 23 November, the first trading day after submission, six real prints fell: MSTR by 0.72%, 3.92% and 0.13%,
+NVDA by 2.05%, TSLA by 0.22% and 0.58%. Each became a full loop in 0.8–1.2 s, and each time the guard checked the
+position. None of them needed a repayment: rising prices since the position opened had lifted its pessimistic health
+from about 1.40 to 1.64, far above the 1.39 trigger set at the start. On 24 November we moved the trigger back under
+its health (trigger 1.63, target 1.67, budget $3,000;
+[`ops/src/rearm.ts`](ops/src/rearm.ts),
+[`0x111c830b…`](https://sepolia.basescan.org/tx/0x111c830b677dd900d68996da5f964761389903b22c397201e478c95fee94502d)),
+so the next meaningful fall is repaid on real prices.
 
 ## Deployments
 
@@ -200,6 +212,8 @@ Races and reports (Node 20+):
 ```sh
 cd ops && npm ci
 DEPLOYER_KEY=0x… npx tsx src/race.ts --delay 1500   # one sandbox race; appends to results/races.json
+DEPLOYER_KEY=0x… npx tsx src/live.ts                # opens the protected position on the live market (once)
+DEPLOYER_KEY=0x… npx tsx src/rearm.ts               # moves its trigger back just under its current health
 npx tsx src/report.ts                               # docs/latency.md and the dashboard data
 ```
 
@@ -214,7 +228,7 @@ command from GitHub Actions; that is how the reactive contract was deployed and 
 | [contracts/src/BellGuard.sol](contracts/src/BellGuard.sol) | Callback contract (Base) |
 | [contracts/src/sandbox](contracts/src/sandbox) | CrashLab and the borrower accounts it drives |
 | [contracts/test/BellGuard.t.sol](contracts/test/BellGuard.t.sol) | Fork tests: the full loop, access control, budgets, isolation, continuation |
-| [ops/src](ops/src) | Race runner, live-position setup, latency report |
+| [ops/src](ops/src) | Race runner, live-position setup and re-arming, latency report |
 | [docs](docs) | Dashboard (GitHub Pages) and the latency report |
 | contracts/lib/bell | Bell, as a dependency (git submodule) |
 

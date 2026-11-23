@@ -9,6 +9,7 @@
     "race": "tsx src/race.ts",
     "report": "tsx src/report.ts",
     "live": "tsx src/live.ts",
+    "rearm": "tsx src/rearm.ts",
     "typecheck": "tsc --noEmit"
   },
   "engines": {
