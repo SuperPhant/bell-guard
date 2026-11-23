@@ -1,12 +1,12 @@
 # Full-loop latency
 
-Generated 2026-11-23 17:49 UTC by `ops/src/report.ts` from BellGuard's own events.
+Generated 2026-11-23 19:49 UTC by `ops/src/report.ts` from BellGuard's own events.
 
 A loop starts in the Base Sepolia block where a Bell market records a falling print (the `Observed` log Reactive
 picks up) and ends in the Base Sepolia block where BellGuard runs. Both ends are read from Base's BaseTime
 predeploy (millisecond block timestamps, 200 ms blocks), so the figures are on one clock.
 
-**10 loops: median 1.4 s, 90th percentile 1.8 s, fastest 0.8 s, slowest 1.8 s.**
+**13 loops: median 1.2 s, 90th percentile 1.8 s, fastest 0.8 s, slowest 1.8 s.**
 
 | # | Market | Stock | Print | Origin block | Reactive (Lasna block) | Callback block | Blocks | Loop | Repaid |
 |---|---|---|---|---|---|---|---|---|---|
@@ -20,3 +20,6 @@ predeploy (millisecond block timestamps, 200 ms blocks), so the figures are on o
 | 8 | sandbox | TSLA | -16.00% | 61641153 | [8879464](https://lasna.reactscan.net/tx/0x269afe0e11b4727ad749b626d392aad0922c025a7fb6b2cd4a96e3461525f7f6) | [61641162](https://sepolia.basescan.org/tx/0xbc6a568fbc9db5fe67aeedc0c6c006c5b1db0e688c3e1ec45e1aa4dd8962529c) | 9 | **1.8 s** | - |
 | 9 | sandbox | TSLA | -15.00% | 61641265 | [8879485](https://lasna.reactscan.net/tx/0xc5e4d30bcafee651cd2cd88233459d8f127062ee5c6345cb5c6ea728baadb512) | [61641273](https://sepolia.basescan.org/tx/0xe1d483cb51337f342d89f7169bc03face163e9b5e8a43ab95359e3662b06d449) | 8 | **1.6 s** | $4,145.52 |
 | 10 | live Bell | MSTR | -0.72% | 62660074 | [9071482](https://lasna.reactscan.net/tx/0x00e3a2fe1952ff84db4d87bc045c026738ff2a6bba7cb7489be03f02bdf945d6) | [62660078](https://sepolia.basescan.org/tx/0xf51a61a092c436cd8c9a0166a4a4d469f4c34d44155862f8999640c1f53261bc) | 4 | **0.8 s** | - |
+| 11 | live Bell | MSTR | -3.92% | 62696200 | [9078271](https://lasna.reactscan.net/tx/0x694b5e387638f16ba0625cfd7bde59f0fe0ef2ac9cafe62f5b0b4c67043bd3a9) | [62696204](https://sepolia.basescan.org/tx/0x7d82b71d7b88d4e57a1874c6bd42e324e9c454c388487ed907526065077368d6) | 4 | **0.8 s** | - |
+| 12 | live Bell | NVDA | -2.05% | 62696200 | [9078271](https://lasna.reactscan.net/tx/0x717902767a659f6f2844a9c6faa1cf654132603403c27b49dc02b3db8135623c) | [62696205](https://sepolia.basescan.org/tx/0x4f4a7380067389c2340ffcdfb2eb71d2f454490ce4a946c62c0959858382aae1) | 5 | **1.0 s** | - |
+| 13 | live Bell | TSLA | -0.22% | 62696200 | [9078271](https://lasna.reactscan.net/tx/0x8f86a1bd96cd1b5a294fada052901ef4f2f3ae74d4c62455bd5d7b255e1d1138) | [62696206](https://sepolia.basescan.org/tx/0xa2eb9078809f6fd7e347eab47047ba1007aee0ee52afc7bd8053bddc665e2c71) | 6 | **1.2 s** | - |
