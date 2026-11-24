@@ -1,10 +1,10 @@
 {
   "summary": {
-    "generatedAt": "2026-11-23T23:50:09.341Z",
+    "generatedAt": "2026-11-24T05:51:25.169Z",
     "guard": "0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F",
     "reactive": "0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44",
     "all": {
-      "loops": 16,
+      "loops": 18,
       "minMs": 800,
       "medianMs": 1000,
       "p90Ms": 1800,
@@ -18,13 +18,13 @@
       "maxMs": 1800
     },
     "live": {
-      "loops": 7,
+      "loops": 9,
       "minMs": 800,
       "medianMs": 1000,
       "p90Ms": 1200,
       "maxMs": 1200
     },
-    "rescues": 3
+    "rescues": 4
   },
   "loops": [
     {
@@ -404,6 +404,54 @@
         "block": 62768468,
         "atMs": 1795475562400,
         "tx": "0x78d1c41f0fb5d835b72b2d6f3bb432d144af4db06120d48bd20400d4c1a3a2d4"
+      },
+      "loopMs": 1200,
+      "loopBlocks": 6,
+      "checked": 1,
+      "rescued": 0,
+      "repaidUsd": 0
+    },
+    {
+      "market": "live Bell",
+      "stock": "MSTR",
+      "roundId": "36893488147419107938",
+      "fallPct": 3.4808,
+      "origin": {
+        "block": 62876763,
+        "atMs": 1795497221400
+      },
+      "reactive": {
+        "block": 9112350,
+        "tx": "0x71d7754d2dfb39baf7b4d6d0d131498517fe0d61b8d0a64846bee23420dcd8d4"
+      },
+      "callback": {
+        "block": 62876768,
+        "atMs": 1795497222400,
+        "tx": "0x7d71d5c37ca393c5847265866a3f061b81629d0ede521cae5e60590f6de044d5"
+      },
+      "loopMs": 1000,
+      "loopBlocks": 5,
+      "checked": 1,
+      "rescued": 1,
+      "repaidUsd": 150.615433
+    },
+    {
+      "market": "live Bell",
+      "stock": "NVDA",
+      "roundId": "36893488147419104990",
+      "fallPct": 0.933,
+      "origin": {
+        "block": 62876763,
+        "atMs": 1795497221400
+      },
+      "reactive": {
+        "block": 9112350,
+        "tx": "0xa1418768561836e9f7a1c84f9b8513fc22c4da6bf5f46821a916556e401b99ac"
+      },
+      "callback": {
+        "block": 62876769,
+        "atMs": 1795497222600,
+        "tx": "0x24b2d10a93e342166735bee262558f8ae7399455831f2019d4759c0f9db9a2bf"
       },
       "loopMs": 1200,
       "loopBlocks": 6,
