@@ -1,14 +1,14 @@
 {
   "summary": {
-    "generatedAt": "2026-11-24T17:54:51.395Z",
+    "generatedAt": "2026-11-24T21:55:38.235Z",
     "guard": "0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F",
     "reactive": "0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44",
     "all": {
-      "loops": 24,
+      "loops": 27,
       "minMs": 800,
       "medianMs": 1200,
-      "p90Ms": 1800,
-      "maxMs": 2000
+      "p90Ms": 2000,
+      "maxMs": 2200
     },
     "sandbox": {
       "loops": 9,
@@ -18,11 +18,11 @@
       "maxMs": 1800
     },
     "live": {
-      "loops": 15,
+      "loops": 18,
       "minMs": 800,
-      "medianMs": 1000,
-      "p90Ms": 1600,
-      "maxMs": 2000
+      "medianMs": 1200,
+      "p90Ms": 2000,
+      "maxMs": 2200
     },
     "rescues": 5
   },
@@ -599,6 +599,78 @@
       },
       "loopMs": 1200,
       "loopBlocks": 6,
+      "checked": 1,
+      "rescued": 0,
+      "repaidUsd": 0
+    },
+    {
+      "market": "live Bell",
+      "stock": "MSTR",
+      "roundId": "36893488147419108023",
+      "fallPct": 1.0768,
+      "origin": {
+        "block": 63165721,
+        "atMs": 1795555013000
+      },
+      "reactive": {
+        "block": 9166618,
+        "tx": "0x904b6e4448e933190751eae7d8f5ae0803fe093ca6f6b8e910456d2bbe3711f2"
+      },
+      "callback": {
+        "block": 63165729,
+        "atMs": 1795555014600,
+        "tx": "0xb447463d2cc41e0b92635182fc61fea2343ab1d8ab589f11f2199e96f16b9615"
+      },
+      "loopMs": 1600,
+      "loopBlocks": 8,
+      "checked": 1,
+      "rescued": 0,
+      "repaidUsd": 0
+    },
+    {
+      "market": "live Bell",
+      "stock": "NVDA",
+      "roundId": "36893488147419105067",
+      "fallPct": 0.0297,
+      "origin": {
+        "block": 63165721,
+        "atMs": 1795555013000
+      },
+      "reactive": {
+        "block": 9166618,
+        "tx": "0x8075ea8002937365c5162f0f9e48ca2b43abe7bfa139525507a1bfd52848bd0e"
+      },
+      "callback": {
+        "block": 63165731,
+        "atMs": 1795555015000,
+        "tx": "0xa7d06d81bafa0f2469cff128cd9d9df572278bd98a74f59dbf8ab4101a24194d"
+      },
+      "loopMs": 2000,
+      "loopBlocks": 10,
+      "checked": 1,
+      "rescued": 0,
+      "repaidUsd": 0
+    },
+    {
+      "market": "live Bell",
+      "stock": "TSLA",
+      "roundId": "36893488147419104882",
+      "fallPct": 0.9816,
+      "origin": {
+        "block": 63165721,
+        "atMs": 1795555013000
+      },
+      "reactive": {
+        "block": 9166618,
+        "tx": "0xf14be298ab57fab2bd1bce63054e042baf687c6a05e08395062fda0ff4ce3a7b"
+      },
+      "callback": {
+        "block": 63165732,
+        "atMs": 1795555015200,
+        "tx": "0x68afa9806005cbf03000fed5738f254ef593a879cf3fb2bdee6f91b6c9cb473c"
+      },
+      "loopMs": 2200,
+      "loopBlocks": 11,
       "checked": 1,
       "rescued": 0,
       "repaidUsd": 0
