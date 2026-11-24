@@ -15,7 +15,8 @@ Built for the [Reactive Omni Buildathon](https://dorahacks.io/hackathon/reactive
 - **Guard:** [`0x47FfAB78…A40F` on Basescan](https://sepolia.basescan.org/address/0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F)
 
 Measured on-chain by 24 November: the full loop (falling print on Base → Reactive Lasna → guard running on Base) took
-**0.8–1.2 s on 6 real falling prints** of MSTR, NVDA and TSLA on the live market, and **1.0–1.8 s (median 1.6 s) in 9
+**0.8–2.2 s (median 1.2 s) on 18 real falling prints** of MSTR, NVDA and TSLA on the live market, where the guard has
+**repaid debt twice on real prices** ($150.62 and $288.43 on 24 November), and **1.0–1.8 s (median 1.6 s) in 9
 sandbox crashes**. In those crashes, the protected borrower survived every race in which the confirming print came
 later than the loop, and its unprotected twin lost **$520** to the liquidation bonus each time.
 
@@ -96,8 +97,8 @@ keeps a funded hot key, and has to be up at the moment a stock gaps. It is one m
 when it is down nobody notices until a borrower is liquidated. With Reactive the watching is a contract: the
 subscription is the trigger, the state (the last print of every stock) lives on-chain, and the network delivers the
 callback. Measured cost: about 0.014 REACT per print on Lasna (0.27 for the first 20 prints, rises included) and a
-fraction of a cent of gas per callback on Base Sepolia. Measured speed: 0.8–1.8 s from the falling print to the guard
-running on Base. Nothing to run.
+fraction of a cent of gas per callback on Base Sepolia. Measured speed: 0.8–2.2 s from the falling print to the guard
+running on Base (median 1.2 s on real prints). Nothing to run.
 
 ## Measured latency
 
@@ -106,7 +107,10 @@ the guard ran. Both ends come from Base's [BaseTime predeploy](https://github.co
 (`0x4200…0030`, millisecond block timestamps, 200 ms blocks), so both are on one clock and exact to the block.
 
 **9 loops by submission (all sandbox): median 1.6 s, 90th percentile 1.8 s, fastest 1.0 s (5 blocks), slowest 1.8 s
-(9 blocks).** **6 more on the live market on 23 November, on real prints: 0.8–1.2 s (4–6 blocks).**
+(9 blocks).** **18 more on the live market on 23–24 November, on real prints: median 1.2 s, 90th percentile 2.0 s,
+fastest 0.8 s (4 blocks), slowest 2.2 s (11 blocks).** When one keeper transaction records falls in several stocks,
+Reactive sends one callback per stock and they land in consecutive blocks, so the second and third stock of a print
+take a block or two longer; the first callback of each real print took 0.8–1.6 s.
 [docs/latency.md](docs/latency.md) lists every loop with its Base and Lasna transactions; a
 [workflow](.github/workflows/report.yml) refreshes it hourly on weekdays, including loops on the live market
 ([`tick.yml`](.github/workflows/tick.yml) starts it on that schedule, because GitHub's own cron trigger ran hours late
@@ -158,14 +162,27 @@ TSLA, MSTR and NVDA, borrowed to Bell's limit) keeps its trigger just under its 
 moves make the guard repay, not only crashes. Every falling print of those stocks is a measured loop on real prices;
 the dashboard shows them as they land.
 
-On Monday 23 November, the first trading day after submission, six real prints fell: MSTR by 0.72%, 3.92% and 0.13%,
-NVDA by 2.05%, TSLA by 0.22% and 0.58%. Each became a full loop in 0.8–1.2 s, and each time the guard checked the
-position. None of them needed a repayment: rising prices since the position opened had lifted its pessimistic health
-from about 1.40 to 1.64, far above the 1.39 trigger set at the start. On 24 November we moved the trigger back under
-its health (trigger 1.63, target 1.67, budget $3,000;
+On Monday 23 November, the first trading day after submission, six real prints fell (MSTR by 0.72%, 3.92% and 0.13%,
+NVDA by 2.05%, TSLA by 0.22% and 0.58%). Each became a full loop in 0.8–1.2 s and the guard checked the position, but
+none needed a repayment: rising prices since the position opened had lifted its pessimistic health from about 1.40 to
+1.64, far above the 1.39 trigger set at the start. On 24 November we moved the trigger back under its health (trigger
+1.63, target 1.67, budget $3,000;
 [`ops/src/rearm.ts`](ops/src/rearm.ts),
-[`0x111c830b…`](https://sepolia.basescan.org/tx/0x111c830b677dd900d68996da5f964761389903b22c397201e478c95fee94502d)),
-so the next meaningful fall is repaid on real prices.
+[`0x111c830b…`](https://sepolia.basescan.org/tx/0x111c830b677dd900d68996da5f964761389903b22c397201e478c95fee94502d)).
+
+The same day, real prints made the guard repay twice:
+
+| Real print (Base Sepolia) | `react()` (Lasna) | Guard (Base Sepolia) | Loop | Repaid | Pessimistic health |
+|---|---|---|---|---|---|
+| 05:13 UTC, MSTR −3.48%: [`0x0bb81924…`](https://sepolia.basescan.org/tx/0x0bb81924587e5028c69543cb3ec6e1e457f7434634e6c676d8ac77b924bbbf10) | [`0x71d7754d…`](https://lasna.reactscan.net/tx/0x71d7754d2dfb39baf7b4d6d0d131498517fe0d61b8d0a64846bee23420dcd8d4) | [`0x7d71d5c3…`](https://sepolia.basescan.org/tx/0x7d71d5c37ca393c5847265866a3f061b81629d0ede521cae5e60590f6de044d5) | 1.0 s | $150.62 | 1.63 → 1.67 |
+| 17:15 UTC, MSTR −3.73%, NVDA −4.13%, TSLA −1.46%: [`0x6f279ef4…`](https://sepolia.basescan.org/tx/0x6f279ef47c8623e8d1d978f41384e5ff5a3a30a7a23d685412b3b24c1da3668c) | [`0x114dc7c5…`](https://lasna.reactscan.net/tx/0x114dc7c55e90339e20f4b4548ae8e2ba4dab8da94f4f67ef4185712c19b54c81) | [`0x70f01def…`](https://sepolia.basescan.org/tx/0x70f01defd1c3a02800cf190ff9952f4dda73583f4e4dc0664db102b2cf80d132) | 0.8 s | $288.43 | 1.59 → 1.67 |
+
+In the second print three stocks fell at once. The MSTR callback, the first to land, already valued the whole position
+at the lower prints and repaid once for all three falls; the NVDA and TSLA callbacks, a block and two blocks later,
+found the position back at its target and did nothing. Both repayments came from the borrower's own reserve, within
+its $3,000 budget ($439.04 used so far), and the borrower kept every share. The position was never near liquidation
+(its pessimistic health never fell below 1.59); its trigger sits close to its health on purpose, so the loop shows up
+on ordinary moves, not only on crashes.
 
 ## Deployments
 
