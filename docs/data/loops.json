@@ -1,10 +1,10 @@
 {
   "summary": {
-    "generatedAt": "2026-11-24T21:55:38.235Z",
+    "generatedAt": "2026-11-24T23:55:51.123Z",
     "guard": "0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F",
     "reactive": "0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44",
     "all": {
-      "loops": 27,
+      "loops": 28,
       "minMs": 800,
       "medianMs": 1200,
       "p90Ms": 2000,
@@ -18,7 +18,7 @@
       "maxMs": 1800
     },
     "live": {
-      "loops": 18,
+      "loops": 19,
       "minMs": 800,
       "medianMs": 1200,
       "p90Ms": 2000,
@@ -671,6 +671,30 @@
       },
       "loopMs": 2200,
       "loopBlocks": 11,
+      "checked": 1,
+      "rescued": 0,
+      "repaidUsd": 0
+    },
+    {
+      "market": "live Bell",
+      "stock": "MSTR",
+      "roundId": "36893488147419108031",
+      "fallPct": 0.7029,
+      "origin": {
+        "block": 63201900,
+        "atMs": 1795562248800
+      },
+      "reactive": {
+        "block": 9173324,
+        "tx": "0xc9a6f1abe3a102a65a939fdccbc68fc196bffb27fa4df43d8c52627c2b303827"
+      },
+      "callback": {
+        "block": 63201908,
+        "atMs": 1795562250400,
+        "tx": "0x527abc1f03a1f835e991a195987f10580d79017e15556f16ebba8af1f3fd1f4e"
+      },
+      "loopMs": 1600,
+      "loopBlocks": 8,
       "checked": 1,
       "rescued": 0,
       "repaidUsd": 0
