@@ -1,12 +1,12 @@
 {
   "summary": {
-    "generatedAt": "2026-11-26T00:01:59.087Z",
+    "generatedAt": "2026-11-27T16:10:46.393Z",
     "guard": "0x47FfAB786f1E3fcFf63F91Ed3687390da539A40F",
     "reactive": "0x7520A38E2e73c6650aD6Cd8109C2c72d73260A44",
     "all": {
-      "loops": 38,
+      "loops": 40,
       "minMs": 800,
-      "medianMs": 1600,
+      "medianMs": 1400,
       "p90Ms": 2000,
       "maxMs": 2200
     },
@@ -18,9 +18,9 @@
       "maxMs": 1800
     },
     "live": {
-      "loops": 29,
+      "loops": 31,
       "minMs": 800,
-      "medianMs": 1600,
+      "medianMs": 1400,
       "p90Ms": 2000,
       "maxMs": 2200
     },
@@ -935,6 +935,54 @@
       },
       "loopMs": 800,
       "loopBlocks": 4,
+      "checked": 1,
+      "rescued": 0,
+      "repaidUsd": 0
+    },
+    {
+      "market": "live Bell",
+      "stock": "MSTR",
+      "roundId": "36893488147419108233",
+      "fallPct": 3.377,
+      "origin": {
+        "block": 64357928,
+        "atMs": 1795793454400
+      },
+      "reactive": {
+        "block": 9386346,
+        "tx": "0x2f4d6555ac23638c73deb91970902c09c8bea3dfaefce69d4c30465f2e690275"
+      },
+      "callback": {
+        "block": 64357933,
+        "atMs": 1795793455400,
+        "tx": "0x008a05c5c0eb5b1ff466eb06d0e7d1abe7382ac267935f1163c2d8b01a27383d"
+      },
+      "loopMs": 1000,
+      "loopBlocks": 5,
+      "checked": 1,
+      "rescued": 0,
+      "repaidUsd": 0
+    },
+    {
+      "market": "live Bell",
+      "stock": "NVDA",
+      "roundId": "36893488147419105199",
+      "fallPct": 3.6775,
+      "origin": {
+        "block": 64357928,
+        "atMs": 1795793454400
+      },
+      "reactive": {
+        "block": 9386346,
+        "tx": "0xd04d0ff7a34ea49b4bf0c504e81cd5016490f0cbc4ee3012c89243060b2c23be"
+      },
+      "callback": {
+        "block": 64357934,
+        "atMs": 1795793455600,
+        "tx": "0x52dfaac15d2856b514b0b4cbeffbc78cbadede1ef57f7ca3885d2c885aa24ecc"
+      },
+      "loopMs": 1200,
+      "loopBlocks": 6,
       "checked": 1,
       "rescued": 0,
       "repaidUsd": 0
